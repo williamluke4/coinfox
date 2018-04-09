@@ -19,7 +19,8 @@ const isLocalhost = Boolean(
 );
 
 export default function register() {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  // process.env.NODE_ENV === 'production' 
+  if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location);
     if (publicUrl.origin !== window.location.origin) {
@@ -30,7 +31,7 @@ export default function register() {
     }
 
     window.addEventListener('load', () => {
-      let swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      let swUrl = `./service-worker.js`;
 
       if (isLocalhost) {
         // This is running on localhost. Lets check if a service worker still exists or not.
@@ -42,8 +43,17 @@ export default function register() {
     });
   }
 }
-
+function registerPermissions(){
+  Notification.requestPermission(function(status) {
+    console.log('Notification permission status:', status);
+});
+}
 function registerValidSW(swUrl) {
+  if(!('PushManager' in window)){
+    console.warn('Push messaging is not supported');
+    pushButton.textContent = 'Push Not Supported';
+  }
+  registerPermissions();
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -57,12 +67,14 @@ function registerValidSW(swUrl) {
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
               console.log('New content is available; please refresh.');
+              
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
               console.log('Content is cached for offline use.');
             }
+            
           }
         };
       };
